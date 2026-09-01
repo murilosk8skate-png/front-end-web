@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+</html lang="pt-br">
+    <heand>
+        <title>Recrutamento online</title>
+        <meta charset="UTF-8">
+    </heand>
+    <body>
+        <header>
+            <h1>ESCOLHA DE FILMES</h1>
+        </header>
+        <main>
+            <section>
+                <h2>Cadastre seu fime favorito</h2>
+                <form action="https://postman-echo.com/post" method="post" enctype="multipart/form-data">
+                    <p>Coloque as informações corretamente em cada campo referente ao seu filme favorito</p>
+                    <fieldset>
+                        <legend>Informações sobre o filme</legend>
+                        <div>
+                            <label for="foto_id">foto</label>
+                            <input id="foto_id" name="foto'" type="file" accept="image/*" required>
+                        </div>
+                        <div>
+                            <label for="nome_id">Nome completo do filme</label>
+                            <input id="nome_id" name="nome" type="teste" required>
+                        </div>
+                        <br>
+                        <div>
+                            <label for="quantidade-filmes_id">Quantos filmes foram feito:</label>
+                            <input id="quantidade-filmes_id" name="quantidade-filmes" type="number" required>
+                        </div>
+                        <br>
+                        <div>
+                            <label for="tipo-de-filme_id">Qual o tipo de filme:</label>
+                            <input id="tipo-de-filme_id" name="tipo-de-filme" type="text" required>
+                        </div>
+                        <br>
+                        <div>
+                            <label for="data-lancamento-do-filme_id">Data do lançamento do filme:</label>
+                            <input id_="data-lancamento-do-filme_id" name="data-lancamento-do-filme" type="date" required>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Sobre elenco</legend>
+                        <div>
+                            <label for="ator-principal_id">Nome do ator principal:</label>
+                            <input id="ator-principal_id" name="ator-principal" type="text">
+                        </div>
+                        <br>
+                        <div>
+                            <label for="quantos-atores_id">Quantos atores possui:</label>
+                            <input id="quantos-atores_id" name="quantos-atores" type="number">
+                        </div>
+                        <br>
+                        <div>
+                            <label for="idade-ator-principal_id">Idade do ator principal:</label>
+                            <input id="idade-ator-principal_id" name="idade-ator-principal" type="number">
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Resumo do filme</legend>
+                        <div>
+                            <label for="resumo_id">Fale um pouco sobre esse filme:</label><br>
+                            <textarea id="resumo_id" 
+                                      name="resumo" 
+                                      rows="4" 
+                                      cols="200"></textarea> 
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Idade minimo para o filme</legend>
+                        <div>
+                            <input id="16-anos_id" name="nivel" type="radio" value="16-anos" required>
+                            <label for="16-anos_id">16 anos</label>
+                        </div>
+                        <div>
+                            <input id="+-18_id" name="nivel" type="radio" value="+-18" required>
+                            <label for="+-18_id">+ 18</label>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Tecnologia utilizada para fazer o filme</legend>
+                        <div>
+                            <input id="tec_cgi_id" name="tecnologia" type="checkbox" value="cgi">
+                            <label for="tec_cgi_id">CGI</label>
+                        </div>
+                        <div>
+                            <input id="tec_live_action_id" name="tecnologia" type="checkbox" value="live_action">
+                            <label for="tec_live_action_id">Live action</label>
+                        </div>
+                        <div>
+                            <input id="tec_chroma_key_id" name="tecnologia" type="checkbox" value="chroma_key">
+                            <label for="tec_chroma_key_id">Chroma Key</label>
+                        </div>
+                        <div>
+                            <input id="tec_outras_tecnologias_id" name="tecnologia" type="checkbox" value="outras_tecnologias">
+                            <label for="tec_outras_tecnologias_id">Outras tecnologias</label>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Grau de intensidade do filme</legend>
+                        <div>
+                            <label for="grau-de-intensidade_id">Grau de intensidade</label>
+                            <select id="grau-de-intensidade_id" name="grau-de-intensidade">
+                                <option value="tranquila">Intensidade tranquila</option>
+                                <option value="media">Intensidade media</option>
+                                <option value="grande">Intensidade grande</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <button type="reset">Limpar dados</button>
+                        <button type="submit">Enviar formulário</button>
+                    </div>
+                    
+                </form>
+            </section>
+        </main>
+        <footer>
+            <p>Todos os direitos reservados</p>
+
+        </footer>
+    </body>
+
+
+</html>
+
+
