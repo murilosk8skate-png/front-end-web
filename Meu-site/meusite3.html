@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Presentes - Pagamento Pix</title>
+
+  <!-- Biblioteca para gerar QR Code -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    header {
+      background: #008f5a;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    header h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 16px;
+      opacity: .9;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .produtos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 25px;
+    }
+
+    .produto {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+      transition: .2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .produto:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,.12);
+    }
+
+    .produto .imagem-container {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #eee;
+    }
+
+    .produto img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .produto h2 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .produto p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .preco {
+      color: #008f5a;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      background: #008f5a;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .btn:hover {
+      background: #007548;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      inset: 0;
+      background: rgba(0,0,0,.65);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 430px;
+      border-radius: 18px;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+      animation: aparecer .2s ease;
+    }
+
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: scale(.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .fechar {
+      position: absolute;
+      right: 18px;
+      top: 12px;
+      font-size: 30px;
+      cursor: pointer;
+      color: #777;
+    }
+
+    .modal h2 {
+      margin-bottom: 8px;
+    }
+
+    .valor-modal {
+      font-size: 30px;
+      font-weight: bold;
+      color: #008f5a;
+      margin: 15px 0;
+    }
+
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    #qrcode img,
+    #qrcode canvas {
+      border: 8px solid white;
+    }
+
+    .pix-copia {
+      background: #f1f3f5;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+      word-break: break-all;
+      margin: 15px 0;
+      text-align: left;
+      max-height: 100px;
+      overflow: auto;
+    }
+
+    .btn-copiar {
+      background: #333;
+      margin-top: 5px;
+    }
+
+    .btn-copiar:hover {
+      background: #111;
+    }
+
+    .aviso {
+      font-size: 13px;
+      color: #666;
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #777;
+      font-size: 13px;
+    }
+
+    @media (max-width: 500px) {
+      header h1 {
+        font-size: 25px;
+      }
+
+      .modal-content {
+        padding: 25px 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Lista de Presentes</h1>
+    <p>Escolha sua contribuição e pague via Pix</p>
+  </header>
+
+  <main class="container">
+
+    <div class="produtos">
+
+      <!-- ITEM 1 -->
+      <div class="produto">
+        <div>
+          <div class="imagem-container">
+            <!-- COLOQUE SUA IMAGEM 1 AQUI -->
+            <img src="./imagens/78e0ed3a-c0af-4dd3-a255-3a8ade47452e.jpg" alt="Curso de Culinária">
+          </div>
+          <h2>Curso de culinária para noiva</h2>
+          <p>Para garantir refeições sem acidentes na cozinha.</p>
+        </div>
+
+        <div>
+          <div class="preco">R$ 150,00</div>
+          <button class="btn" onclick="abrirPagamento('Curso de culinária para noiva', 150.00)">
+            Contribuir com Pix
+          </button>
+        </div>
+      </div>
+
+      <!-- ITEM 2 -->
+      <div class="produto">
+        <div>
+          <div class="imagem-container">
+            <!-- COLOQUE SUA IMAGEM 2 AQUI -->
+            <img src="./imagens/f8d36d01-3fbc-4961-ba7d-705779633c85.jpg" alt="Permissão para levar acompanhante">
+          </div>
+          <h2>Permissão para levar +1 sem convite</h2>
+          <p>Passaporte VIP para trazer quem não foi convidado.</p>
+        </div>
+
+        <div>
+          <div class="preco">R$ 500,00</div>
+          <button class="btn" onclick="abrirPagamento('Permissao para levar +1', 500.00)">
+            Contribuir com Pix
+          </button>
+        </div>
+      </div>
+
+      <!-- ITEM 3 -->
+      <div class="produto">
+        <div>
+          <div class="imagem-container">
+            <!-- COLOQUE SUA IMAGEM 3 AQUI -->
+            <img src="imagem3.jpg" alt="Ajuda para aluguel">
+          </div>
+          <h2>Ajuda para 14 meses de aluguel</h2>
+          <p>Para o Seu Madruga não vir cobrar o aluguel.</p>
+        </div>
+
+        <div>
+          <div class="preco">R$ 1.400,00</div>
+          <button class="btn" onclick="abrirPagamento('Ajuda 14 meses de aluguel', 1400.00)">
+            Contribuir com Pix
+          </button>
+        </div>
+      </div>
+
+      <!-- ITEM 4 -->
+      <div class="produto">
+        <div>
+          <div class="imagem-container">
+            <!-- COLOQUE SUA IMAGEM 4 AQUI -->
+            <img src="imagem4.jpg" alt="Areia para o gato">
+          </div>
+          <h2>Areia para o gato</h2>
+          <p>Ajude a comprar areia para o gato parar de reclamar.</p>
+        </div>
+
+        <div>
+          <div class="preco">R$ 80,00</div>
+          <button class="btn" onclick="abrirPagamento('Areia para o gato', 80.00)">
+            Contribuir com Pix
+          </button>
+        </div>
+      </div>
+
+           <!-- ITEM 5 -->
+      <div class="produto">
+        <div>
+          <div class="imagem-container">
+            <!-- COLOQUE SUA IMAGEM 4 AQUI -->
+            <img src="imagem4.jpg" alt="Areia para o gato">
+          </div>
+          <h2>TESSSSSSSSSSSSSSSSSSSSSSSSSTE</h2>
+          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minima excepturi vitae, cupiditate libero consequuntur sint ex, aliquid voluptatem odit mollitia ab rerum autem dignissimos ullam vel et, optio debitis facere.</p>
+        </div>
+
+        <div>
+          <div class="preco">R$ 80,00</div>
+          <button class="btn" onclick="abrirPagamento('Areia para o gato', 80.00)">
+            Contribuir com Pix
+          </button>
+        </div>
+      </div>
+
+    
+    
+    
+    
+    
+    </div>
+
+
+
+   
+
+  </main>
+
+  <footer>
+    Pagamento seguro através do Pix.
+  </footer>
+
+
+  <!-- MODAL DE PAGAMENTO -->
+  <div class="modal" id="modal">
+
+    <div class="modal-content">
+
+      <span class="fechar" onclick="fecharPagamento()">&times;</span>
+
+      <h2 id="produtoSelecionado">Pagamento</h2>
+
+      <div class="valor-modal" id="valorSelecionado">R$ 0,00</div>
+
+      <p>Escaneie o QR Code abaixo usando o aplicativo do seu banco.</p>
+
+      <div id="qrcode"></div>
+
+      <p>Ou copie o código Pix:</p>
+
+      <div class="pix-copia" id="pixCopia"></div>
+
+      <button class="btn btn-copiar" onclick="copiarPix()">
+        📋 Copiar código Pix
+      </button>
+
+      <div class="aviso">
+        Confira o valor e o destinatário no aplicativo do seu banco antes de confirmar o pagamento.
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    /* CONFIGURAÇÃO DO PIX */
+    const CHAVE_PIX = "murilocatmussi@outlook.com";
+    const NOME_RECEBEDOR = "SEU NOME";
+    const CIDADE_RECEBEDOR = "SUA CIDADE";
+
+    /* FUNÇÕES DO PIX */
+    function formatarValor(valor) {
+      return valor.toFixed(2);
+    }
+
+    function limparTexto(texto) {
+      return texto
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9 ]/g, "")
+        .substring(0, 25)
+        .toUpperCase();
+    }
+
+    function crc16(payload) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < payload.length; i++) {
+        crc ^= payload.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          if ((crc & 0x8000) !== 0) {
+            crc = (crc << 1) ^ 0x1021;
+          } else {
+            crc = crc << 1;
+          }
+          crc &= 0xFFFF;
+        }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, "0");
+    }
+
+    function campo(id, valor) {
+      return (
+        id +
+        String(valor.length).padStart(2, "0") +
+        valor
+      );
+    }
+
+    function gerarPix(valor, descricao) {
+      const nome = limparTexto(NOME_RECEBEDOR);
+      const cidade = limparTexto(CIDADE_RECEBEDOR);
+
+      const gui = campo("00", "br.gov.bcb.pix");
+      const chave = campo("01", CHAVE_PIX);
+      const merchantAccount = campo("26", gui + chave);
+
+      let payload = "";
+      payload += campo("00", "01");
+      payload += merchantAccount;
+      payload += campo("52", "0000");
+      payload += campo("53", "986");
+      payload += campo("54", formatarValor(valor));
+      payload += campo("58", "BR");
+      payload += campo("59", nome);
+      payload += campo("60", cidade);
+
+      const descricaoLimpa = limparTexto(descricao).substring(0, 20);
+      payload += campo("62", campo("05", descricaoLimpa));
+
+      payload += "6304";
+      payload += crc16(payload);
+
+      return payload;
+    }
+
+    /* ABRIR PAGAMENTO */
+    function abrirPagamento(produto, valor) {
+      const modal = document.getElementById("modal");
+      const titulo = document.getElementById("produtoSelecionado");
+      const valorElemento = document.getElementById("valorSelecionado");
+      const pixElemento = document.getElementById("pixCopia");
+      const qr = document.getElementById("qrcode");
+
+      titulo.innerText = "Pagamento - " + produto;
+      valorElemento.innerText = valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+
+      const codigoPix = gerarPix(valor, produto);
+      pixElemento.innerText = codigoPix;
+
+      qr.innerHTML = "";
+
+      new QRCode(qr, {
+        text: codigoPix,
+        width: 230,
+        height: 230,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      modal.style.display = "flex";
+    }
+
+    /* FECHAR MODAL */
+    function fecharPagamento() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("modal");
+      if (event.target === modal) {
+        fecharPagamento();
+      }
+    };
+
+    /* COPIAR PIX */
+    async function copiarPix() {
+      const codigo = document.getElementById("pixCopia").innerText;
+      try {
+        await navigator.clipboard.writeText(codigo);
+        alert("Código Pix copiado!");
+      } catch (erro) {
+        alert("Não foi possível copiar automaticamente. Selecione e copie o código Pix.");
+      }
+    }
+
+  </script>
+
+</body>
+</html>

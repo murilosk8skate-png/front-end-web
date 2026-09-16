@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Loja - Pagamento</title>
+
+  <!-- Biblioteca para gerar QR Code -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    header {
+      background: #008f5a;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    header h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 16px;
+      opacity: .9;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .produtos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+    }
+
+    .produto {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+      transition: .2s;
+    }
+
+    .produto:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,.12);
+    }
+
+    .produto .imagem {
+      font-size: 80px;
+      margin-bottom: 15px;
+    }
+
+    .produto h2 {
+      margin-bottom: 10px;
+    }
+
+    .preco {
+      color: #008f5a;
+      font-size: 28px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      background: #008f5a;
+      color: white;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .btn:hover {
+      background: #007548;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      inset: 0;
+      background: rgba(0,0,0,.65);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 460px;
+      border-radius: 18px;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+      animation: aparecer .2s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: scale(.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .fechar {
+      position: absolute;
+      right: 18px;
+      top: 12px;
+      font-size: 30px;
+      cursor: pointer;
+      color: #777;
+    }
+
+    .modal h2 {
+      margin-bottom: 8px;
+    }
+
+    .valor-modal {
+      font-size: 30px;
+      font-weight: bold;
+      color: #008f5a;
+      margin: 10px 0 20px 0;
+    }
+
+    /* Navegação das Abas de Pagamento */
+    .metodos-pagamento {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 10px;
+    }
+
+    .aba-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .aba-btn.ativa {
+      background: #008f5a;
+      color: white;
+      border-color: #008f5a;
+    }
+
+    .conteudo-aba {
+      display: none;
+    }
+
+    .conteudo-aba.ativa {
+      display: block;
+    }
+
+    /* Estilos do Pix */
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    #qrcode img,
+    #qrcode canvas {
+      border: 8px solid white;
+    }
+
+    .pix-copia {
+      background: #f1f3f5;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+      word-break: break-all;
+      margin: 15px 0;
+      text-align: left;
+      max-height: 100px;
+      overflow: auto;
+    }
+
+    .btn-copiar {
+      background: #333;
+      margin-top: 5px;
+    }
+
+    .btn-copiar:hover {
+      background: #111;
+    }
+
+    /* Estilos do Cartão de Crédito */
+    .form-cartao {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .grupo-campo {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .grupo-campo label {
+      font-size: 13px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    .grupo-campo input,
+    .grupo-campo select {
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .grupo-campo input:focus,
+    .grupo-campo select:focus {
+      border-color: #008f5a;
+    }
+
+    .linha-dupla {
+      display: flex;
+      gap: 10px;
+    }
+
+    .linha-dupla .grupo-campo {
+      flex: 1;
+    }
+
+    .aviso {
+      font-size: 13px;
+      color: #666;
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #777;
+      font-size: 13px;
+    }
+
+    @media (max-width: 500px) {
+      header h1 {
+        font-size: 25px;
+      }
+
+      .modal-content {
+        padding: 25px 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Minha Loja</h1>
+    <p>Escolha seu produto e pague via Pix ou Cartão</p>
+  </header>
+
+  <main class="container">
+
+    <div class="produtos">
+
+      <!-- PANELA -->
+      <div class="produto">
+        <div class="imagem">🍳</div>
+
+        <h2>Panela</h2>
+
+        <p>Panela de ótima qualidade.</p>
+
+        <div class="preco">
+          R$ 100,00
+        </div>
+
+        <button
+          class="btn"
+          onclick="abrirPagamento('Panela', 100.00)">
+          Comprar Agora
+        </button>
+      </div>
+
+      <!-- TV -->
+      <div class="produto">
+        <div class="imagem">📺</div>
+
+        <h2>TV</h2>
+
+        <p>Televisão moderna para sua casa.</p>
+
+        <div class="preco">
+          R$ 5.000,00
+        </div>
+
+        <button
+          class="btn"
+          onclick="abrirPagamento('TV', 5000.00)">
+          Comprar Agora
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer>
+    Pagamento seguro através do Pix ou Cartão de Crédito em até 12x.
+  </footer>
+
+
+  <!-- MODAL DE PAGAMENTO -->
+  <div class="modal" id="modal">
+
+    <div class="modal-content">
+
+      <span class="fechar" onclick="fecharPagamento()">
+        &times;
+      </span>
+
+      <h2 id="produtoSelecionado">
+        Pagamento
+      </h2>
+
+      <div class="valor-modal" id="valorSelecionado">
+        R$ 0,00
+      </div>
+
+      <!-- Abas para alternar a forma de pagamento -->
+      <div class="metodos-pagamento">
+        <button class="aba-btn ativa" onclick="alternarAba('pix')">❖ Pix</button>
+        <button class="aba-btn" onclick="alternarAba('cartao')">💳 Cartão de Crédito</button>
+      </div>
+
+      <!-- ABA PIX -->
+      <div id="aba-pix" class="conteudo-aba ativa">
+        <p>
+          Escaneie o QR Code abaixo usando o aplicativo do seu banco.
+        </p>
+
+        <div id="qrcode"></div>
+
+        <p>
+          Ou copie o código Pix:
+        </p>
+
+        <div class="pix-copia" id="pixCopia"></div>
+
+        <button
+          class="btn btn-copiar"
+          onclick="copiarPix()">
+          📋 Copiar código Pix
+        </button>
+
+        <div class="aviso">
+          Confira o valor e o destinatário no aplicativo do seu banco
+          antes de confirmar o pagamento.
+        </div>
+      </div>
+
+      <!-- ABA CARTÃO DE CRÉDITO -->
+      <div id="aba-cartao" class="conteudo-aba">
+        <form class="form-cartao" onsubmit="finalizarPagamentoCartao(event)">
+          <div class="grupo-campo">
+            <label for="numeroCartao">Número do Cartão</label>
+            <input type="text" id="numeroCartao" placeholder="0000 0000 0000 0000" maxlength="19" required>
+          </div>
+
+          <div class="grupo-campo">
+            <label for="nomeCartao">Nome Impresso no Cartão</label>
+            <input type="text" id="nomeCartao" placeholder="NOME COMO NO CARTÃO" required>
+          </div>
+
+          <div class="linha-dupla">
+            <div class="grupo-campo">
+              <label for="validadeCartao">Validade</label>
+              <input type="text" id="validadeCartao" placeholder="MM/AA" maxlength="5" required>
+            </div>
+            <div class="grupo-campo">
+              <label for="cvvCartao">CVV</label>
+              <input type="text" id="cvvCartao" placeholder="123" maxlength="4" required>
+            </div>
+          </div>
+
+          <div class="grupo-campo">
+            <label for="parcelas">Opções de Parcelamento</label>
+            <select id="parcelas" required>
+              <!-- Preenchido dinamicamente pelo JavaScript -->
+            </select>
+          </div>
+
+          <button type="submit" class="btn" style="margin-top: 10px;">
+            Pagar com Cartão
+          </button>
+        </form>
+
+        <div class="aviso">
+          Transação simulada de forma segura com criptografia SSL.
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    /*
+      ================================
+      CONFIGURAÇÃO DO PIX
+      ================================
+    */
+
+    const CHAVE_PIX = "murilocatmussi@outlook.com";
+    const NOME_RECEBEDOR = "SEU NOME";
+    const CIDADE_RECEBEDOR = "SUA CIDADE";
+
+    let valorProdutoAtual = 0;
+
+    /*
+      ================================
+      CONTROLE DE ABAS (PIX / CARTÃO)
+      ================================
+    */
+
+    function alternarAba(metodo) {
+      const btnPix = document.querySelectorAll('.aba-btn')[0];
+      const btnCartao = document.querySelectorAll('.aba-btn')[1];
+      const abaPix = document.getElementById('aba-pix');
+      const abaCartao = document.getElementById('aba-cartao');
+
+      if (metodo === 'pix') {
+        btnPix.classList.add('ativa');
+        btnCartao.classList.remove('ativa');
+        abaPix.classList.add('ativa');
+        abaCartao.classList.remove('ativa');
+      } else {
+        btnCartao.classList.add('ativa');
+        btnPix.classList.remove('ativa');
+        abaCartao.classList.add('ativa');
+        abaPix.classList.remove('ativa');
+      }
+    }
+
+
+    /*
+      ================================
+      PARCELAMENTO CARTÃO
+      ================================
+    */
+
+    function atualizarOpcoesParcelamento(valorTotal) {
+      const selectParcelas = document.getElementById('parcelas');
+      selectParcelas.innerHTML = '';
+
+      for (let i = 1; i <= 12; i++) {
+        const valorParcela = valorTotal / i;
+        const option = document.createElement('option');
+        option.value = i;
+        
+        const valorFormatado = valorParcela.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL"
+        });
+
+        if (i === 1) {
+          option.text = `1x de ${valorFormatado} (À vista sem juros)`;
+        } else {
+          option.text = `${i}x de ${valorFormatado} sem juros`;
+        }
+        
+        selectParcelas.appendChild(option);
+      }
+    }
+
+
+    /*
+      ================================
+      FUNÇÕES DO PIX
+      ================================
+    */
+
+    function formatarValor(valor) {
+      return valor.toFixed(2);
+    }
+
+
+    function limparTexto(texto) {
+      return texto
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9 ]/g, "")
+        .substring(0, 25)
+        .toUpperCase();
+    }
+
+
+    function crc16(payload) {
+      let crc = 0xFFFF;
+
+      for (let i = 0; i < payload.length; i++) {
+        crc ^= payload.charCodeAt(i) << 8;
+
+        for (let j = 0; j < 8; j++) {
+          if ((crc & 0x8000) !== 0) {
+            crc = (crc << 1) ^ 0x1021;
+          } else {
+            crc = crc << 1;
+          }
+          crc &= 0xFFFF;
+        }
+      }
+
+      return crc.toString(16).toUpperCase().padStart(4, "0");
+    }
+
+
+    function campo(id, valor) {
+      return (
+        id +
+        String(valor.length).padStart(2, "0") +
+        valor
+      );
+    }
+
+
+    function gerarPix(valor, descricao) {
+      const nome = limparTexto(NOME_RECEBEDOR);
+      const cidade = limparTexto(CIDADE_RECEBEDOR);
+
+      const gui = campo("00", "br.gov.bcb.pix");
+      const chave = campo("01", CHAVE_PIX);
+      const merchantAccount = campo("26", gui + chave);
+
+      let payload = "";
+      payload += campo("00", "01");
+      payload += merchantAccount;
+      payload += campo("52", "0000");
+      payload += campo("53", "986");
+      payload += campo("54", formatarValor(valor));
+      payload += campo("58", "BR");
+      payload += campo("59", nome);
+      payload += campo("60", cidade);
+
+      const descricaoLimpa = limparTexto(descricao).substring(0, 20);
+      payload += campo("62", campo("05", descricaoLimpa));
+
+      payload += "6304";
+      payload += crc16(payload);
+
+      return payload;
+    }
+
+
+    /*
+      ================================
+      ABRIR PAGAMENTO
+      ================================
+    */
+
+    function abrirPagamento(produto, valor) {
+      valorProdutoAtual = valor;
+
+      const modal = document.getElementById("modal");
+      const titulo = document.getElementById("produtoSelecionado");
+      const valorElemento = document.getElementById("valorSelecionado");
+      const pixElemento = document.getElementById("pixCopia");
+      const qr = document.getElementById("qrcode");
+
+      titulo.innerText = "Pagamento - " + produto;
+
+      valorElemento.innerText = valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+
+      // Gerar Opções de Parcelamento do Cartão
+      atualizarOpcoesParcelamento(valor);
+
+      // Gerar código Pix
+      const codigoPix = gerarPix(valor, produto);
+      pixElemento.innerText = codigoPix;
+
+      // Limpa e cria novo QR Code
+      qr.innerHTML = "";
+      new QRCode(qr, {
+        text: codigoPix,
+        width: 230,
+        height: 230,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // Padronizar abrindo na aba Pix
+      alternarAba('pix');
+
+      modal.style.display = "flex";
+    }
+
+
+    /*
+      ================================
+      FECHAR MODAL E PROCESSAR CARTÃO
+      ================================
+    */
+
+    function fecharPagamento() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("modal");
+      if (event.target === modal) {
+        fecharPagamento();
+      }
+    };
+
+    async function copiarPix() {
+      const codigo = document.getElementById("pixCopia").innerText;
+      try {
+        await navigator.clipboard.writeText(codigo);
+        alert("Código Pix copiado!");
+      } catch (erro) {
+        alert("Não foi possível copiar automaticamente. Selecione e copie o código Pix.");
+      }
+    }
+
+    function finalizarPagamentoCartao(event) {
+      event.preventDefault();
+      const numParcelas = document.getElementById("parcelas").value;
+      alert(`Pagamento processado com sucesso em ${numParcelas}x no cartão de crédito!`);
+      fecharPagamento();
+    }
+
+  </script>
+
+</body>
+</html>
