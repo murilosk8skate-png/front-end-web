@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/global.css">
+    <script src="scripts/index.js" defer></script>
+    <title>Formulario JS</title>
+</head>
+<body>
+    <header>
+        <h1>formulario do murilo</h1>
+    </header>
+
+    <main>
+        <h2>Cadastro</h2>
+        <form id="cadastro" novalidate onsubmit="executar(event)">
+            <label for="nome">Nome*</label>
+            <input type="text" id="nome">
+            <p id="erro-nome" class="oculto"></p>
+
+            <label for="idade">Idade*</label>
+            <input type="number" id="idade">
+            <p id="erro-idade" class="oculto"></p>
+
+            <label for="email">Email*</label>
+            <input type="email" id="email">
+            <p id="erro-email" class="oculto"></p>
+
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone">
+            <p id="erro-telefone" class="oculto"></p>
+
+            <label for="endereco">Endereço</label>
+            <input type="text" id="endereco">
+            <p id="erro-endereco" class="oculto"></p>
+
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade">
+            <p id="erro-cidade" class="oculto"></p>
+
+            <label for="estado">Estado</label>
+            <input type="text" id="estado">
+            <p id="erro-estado" class="oculto"></p>
+
+            <label for="cep">CEP</label>
+            <input type="text" id="cep">
+            <p id="erro-cep" class="oculto"></p>
+
+            <label for="senha">Senha</label>
+            <input type="password" id="senha">
+            <p id="erro-senha" class="oculto"></p>
+
+            <label for="confirmar-senha">Confirmar senha</label>
+            <input type="password" id="confirmar-senha">
+            <p id="erro-confirmar-senha" class="oculto"></p>
+
+            <label>
+                <input type="checkbox" id="termos">
+                Li e aceito os termos
+            </label>
+            <p id="erro-termos" class="oculto"></p>
+
+            <button type="submit">
+                Enviar
+            </button>
+            <p id="concluido" class="oculto"></p>
+        </form>
+
+    </main>
+
+    <footer>
+        <p>Projeto para conhecermos o JavaScript</p>
+    </footer>
+    
+</body>
+</html>
